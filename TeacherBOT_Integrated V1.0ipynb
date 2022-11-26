@@ -1,0 +1,803 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyM+Jl2soMilIs9mk1zEqYSk",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/fdouradof/SML/blob/main/TeacherBOT_Integrated%20V1.0ipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "LiTIwkkxzbjL"
+      },
+      "outputs": [],
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#read data\n",
+        "data = pd.read_excel(\"Clear Corpus 6.0.1 (1).xlsx\")"
+      ],
+      "metadata": {
+        "id": "pEnOCtEWzlkv"
+      },
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Dataframe creation\n",
+        "df = pd.DataFrame(data)"
+      ],
+      "metadata": {
+        "id": "uXw7ktXV4Cdw"
+      },
+      "execution_count": 9,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#features of text in corpus\n",
+        "print(df.keys())"
+      ],
+      "metadata": {
+        "id": "d4Dnpa6a0Wn4",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "8cd26002-e8dc-49d7-e890-13b2808e9b53"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Index(['ID', 'Last Changed', 'Author', 'Title', 'Anthology', 'URL', 'Source',\n",
+            "       'Pub Year', 'Category', 'Location', 'License', 'MPAA\\nMax',\n",
+            "       'MPAA \\n#Max', 'MPAA\\n#Avg', 'Excerpt', 'Google\\nWC', 'Joon\\nWC v1',\n",
+            "       'British WC', 'British Words', 'Sentence\\nCount v1',\n",
+            "       'Sentence\\nCount v2', 'Paragraphs', 'BT Easiness', 'BT s.e.',\n",
+            "       'Flesch-Reading-Ease', 'Flesch-Kincaid-Grade-Level',\n",
+            "       'Automated Readability Index', 'SMOG Readability',\n",
+            "       'New Dale-Chall Readability Formula', 'CAREC', 'CAREC_M', 'CARES',\n",
+            "       'CML2RI', 'firstPlace_pred', 'secondPlace_pred', 'thirdPlace_pred',\n",
+            "       'fourthPlace_pred', 'fifthPlace_pred', 'sixthPlace_pred',\n",
+            "       'Kaggle split'],\n",
+            "      dtype='object')\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# define difficulty \n",
+        "print(df[\"BT Easiness\"].head(3))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "4wLAiFsR0a6X",
+        "outputId": "2524c864-4c3c-46d0-fdf9-f34dbb100360"
+      },
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "0   -0.340259\n",
+            "1   -0.315372\n",
+            "2   -0.580118\n",
+            "Name: BT Easiness, dtype: float64\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Chose 2 other features\n",
+        "print(\"TIPO = \", df[\"Category\"].iloc[2])\n",
+        "print(\"TEXTO = \", df[\"Excerpt\"].iloc[2])\n"
+      ],
+      "metadata": {
+        "id": "ZWbi5Jhd0vST",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "f5afbee5-3087-4b2f-cfba-e8b410bd9f58"
+      },
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "TIPO =  Lit\n",
+            "TEXTO =  As Roger had predicted, the snow departed as quickly as it came, and two days after their sleigh ride there was scarcely a vestige of white on the ground. Tennis was again possible and a great game was in progress on the court at Pine Laurel. Patty and Roger were playing against Elise and Sam Blaney, and the pairs were well matched.\n",
+            "But the long-contested victory finally went against Patty, and she laughingly accepted defeat.\n",
+            "\"Only because Patty's not quite back on her game yet,\" Roger defended; \"this child has been on the sick list, you know, Sam, and she isn't up to her own mark.\"\n",
+            "\"Well, I like that!\" cried Patty; \"suppose you bear half the blame, Roger. You see, Mr. Blaney, he is so absorbed in his own Love Game, he can't play with his old-time skill.\"\n",
+            "\"All right, Patsy, let it go at that. And it's so, too. I suddenly remembered something Mona told me to tell you, and it affected my service.\"\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Melhor utilizar só a categoria de informação e o texto\n",
+        "mask = df.loc[df['Category'] == \"Info\"]\n",
+        "\n",
+        "print(\"TIPO = \",mask[\"Category\"].iloc[2])\n",
+        "print(\"TEXTO =\", mask[\"Excerpt\"].iloc[2])\n",
+        "print(\"DIFICULDADE = \",mask[\"BT Easiness\"].iloc[2])\n",
+        "\n",
+        "df1 = mask\n",
+        "df1 =  df1[[\"Excerpt\",\"BT Easiness\"]]\n",
+        "df1.shape"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "kuiMQ0b_2mDM",
+        "outputId": "2eb310f0-8c1d-462d-f309-69bad920f782"
+      },
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "TIPO =  Info\n",
+            "TEXTO = I have here a knife. It was given me by a friend, a token of his affection and esteem, when I went aboard the steamer in Manila, Philippine Islands, to return to the homeland. All these years since then the knife has been on my study desk, daily teaching me. What lessons does this knife teach?\n",
+            "First of all the knife tells me of Strength. The most important part of this knife is what I call the backbone. It is the main portion of the knife to which all the blades are fastened, as well as the polished pearl handle. This would be a weak and useless knife did it not have a backbone. It says to me every day \"Be strong, stand up, have convictions, be steadfast.\"\n",
+            "Lesson number two, Discipline. This knife has been subjected to many trials and tests. The steel of which these blades are made had to go through a hard, hot, trying process before they were tempered and fit to take an edge and hold it. Sometimes I rebel about certain processes of the days, then I think of my knife and learn from it the lesson of discipline.\n",
+            "DIFICULDADE =  -0.646751102\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(2304, 2)"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 22
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def dificuldade(x):\n",
+        "  if x < -2 :\n",
+        "    return 2\n",
+        "\n",
+        "  if x > -2 and x < -1:\n",
+        "    return 1\n",
+        "    \n",
+        "  else:\n",
+        "    return 0"
+      ],
+      "metadata": {
+        "id": "MTX_KEciTIAX"
+      },
+      "execution_count": 66,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model_data = df1\n",
+        "model_data[\"label\"] = df1[\"BT Easiness\"].apply(dificuldade)\n",
+        "model_data.groupby(\"label\").count()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 279
+        },
+        "id": "OJg3CqVDUrpk",
+        "outputId": "24aab04f-e5a2-48c9-9c48-cb92af6d3d72"
+      },
+      "execution_count": 65,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/ipykernel_launcher.py:2: SettingWithCopyWarning: \n",
+            "A value is trying to be set on a copy of a slice from a DataFrame.\n",
+            "Try using .loc[row_indexer,col_indexer] = value instead\n",
+            "\n",
+            "See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy\n",
+            "  \n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "       Excerpt  BT Easiness\n",
+              "label                      \n",
+              "0          930          930\n",
+              "1          743          743\n",
+              "2          631          631"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-a349b331-55a0-4ca6-b732-34c4b582bdec\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Excerpt</th>\n",
+              "      <th>BT Easiness</th>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>label</th>\n",
+              "      <th></th>\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>930</td>\n",
+              "      <td>930</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>743</td>\n",
+              "      <td>743</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>631</td>\n",
+              "      <td>631</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-a349b331-55a0-4ca6-b732-34c4b582bdec')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "        \n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "      \n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-a349b331-55a0-4ca6-b732-34c4b582bdec button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-a349b331-55a0-4ca6-b732-34c4b582bdec');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n",
+              "  "
+            ]
+          },
+          "metadata": {},
+          "execution_count": 65
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Modules for text treatment\n",
+        "import re\n",
+        "import nltk\n",
+        "nltk.download('punkt')\n",
+        "nltk.download('stopwords')\n",
+        "from nltk.stem import SnowballStemmer\n",
+        "from nltk.corpus import stopwords\n",
+        "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+        "from sklearn.metrics import pairwise_distances\n",
+        "from sklearn.feature_extraction.text import CountVectorizer"
+      ],
+      "metadata": {
+        "id": "UjmDWwDw7u5T",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "1d139247-58d7-4e02-f51f-ce01cd5f46b1"
+      },
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "[nltk_data] Downloading package punkt to /root/nltk_data...\n",
+            "[nltk_data]   Unzipping tokenizers/punkt.zip.\n",
+            "[nltk_data] Downloading package stopwords to /root/nltk_data...\n",
+            "[nltk_data]   Unzipping corpora/stopwords.zip.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Modules for ML \n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.naive_bayes import GaussianNB\n",
+        "from sklearn.neighbors import KNeighborsClassifier\n",
+        "from sklearn.metrics import mean_absolute_error,r2_score,mean_squared_error\n",
+        "from sklearn import metrics"
+      ],
+      "metadata": {
+        "id": "1hnxI3bZLg3o"
+      },
+      "execution_count": 26,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "def evaluate(model):\n",
+        "  y_pred = model.predict(x_test) \n",
+        "  conf_mat = metrics.confusion_matrix(y_test,y_pred)\n",
+        "  print(conf_mat)\n",
+        "\n",
+        "  accuracy = metrics.accuracy_score(y_test,y_pred)                    \n",
+        "  sensitivity = metrics.recall_score(y_test,y_pred,average = None)\n",
+        "  precision = metrics.precision_score(y_test,y_pred, average = None)\n",
+        "  print('Accuracy    = {}'.format(np.round(accuracy,3)))\n",
+        "  print('Sensitvity  = {}'.format(np.round(sensitivity,3)))\n",
+        "  print('Precision   = {}'.format(np.round(precision,3)))\n",
+        "  print(\"       \")\n"
+      ],
+      "metadata": {
+        "id": "UGRsY5lxVy7f"
+      },
+      "execution_count": 93,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def ti(docs,max_features,min_df,max_df):\n",
+        "    docs = [str(x).lower() for x in docs]\n",
+        "    vectorizer = TfidfVectorizer(max_features = max_features, min_df = min_df, max_df = max_df, stop_words=stopwords.words('english'))\n",
+        "    X = vectorizer.fit_transform(docs).toarray()\n",
+        "    key_words = vectorizer.get_feature_names_out()\n",
+        "    return X, key_words, vectorizer"
+      ],
+      "metadata": {
+        "id": "8ig5VhWu7v5m"
+      },
+      "execution_count": 29,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Criar o vetorizador\n",
+        "docs = model_data[\"Excerpt\"]\n",
+        "X, kw, my_vectorizer = ti(docs,max_features=2000, min_df=0.01, max_df=0.90)\n",
+        "X.shape"
+      ],
+      "metadata": {
+        "id": "gPUorcQa9nSr",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "651b5a34-3a9e-4667-d3ab-a8afb191c6d1"
+      },
+      "execution_count": 89,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(2304, 1432)"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 89
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "x_values = pd.DataFrame(X, columns = kw).values\n",
+        "y_values = model_data[\"label\"].values\n",
+        "#check shapes\n",
+        "print(len(x_values))\n",
+        "print(len(y_values))"
+      ],
+      "metadata": {
+        "id": "Iip2KxU9pKyo",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "ad5d8e8b-b60d-4dbe-f339-edb7bf38c701"
+      },
+      "execution_count": 90,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "2304\n",
+            "2304\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#define ML model\n",
+        "M = LogisticRegression(solver='liblinear',max_iter=53)\n",
+        "x_train,x_test, y_train, y_test = train_test_split(x_values,y_values, test_size = 0.33, random_state=42)\n",
+        "M.fit(x_train,y_train)\n",
+        "# other model\n",
+        "GNB = GaussianNB()\n",
+        "GNB.fit(x_train,y_train)  \n",
+        "#another\n",
+        "KNN = KNeighborsClassifier(n_neighbors=51)\n",
+        "KNN.fit(x_train,y_train)   "
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9nRne4bibPm_",
+        "outputId": "e62c86ad-28d6-4bbd-d273-b79a0c0bab8e"
+      },
+      "execution_count": 99,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "KNeighborsClassifier(n_neighbors=51)"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 99
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Verificar eficiencia (not sure about the value calculations)\n",
+        "print(\"modelo\", M)\n",
+        "y_predM = evaluate(M)\n",
+        "print(\"modelo\", GNB)\n",
+        "y_predGNB = evaluate(GNB)\n",
+        "print(\"modelo\", KNN)\n",
+        "y_predGNB = evaluate(KNN)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Z9-__uicbWje",
+        "outputId": "cc2c2edf-df7e-46bc-e786-931aba2ff634"
+      },
+      "execution_count": 100,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "modelo LogisticRegression(max_iter=53, solver='liblinear')\n",
+            "[[251  40   9]\n",
+            " [101  91  51]\n",
+            " [ 39  69 110]]\n",
+            "Accuracy    = 0.594\n",
+            "Sensitvity  = [0.837 0.374 0.505]\n",
+            "Precision   = [0.642 0.455 0.647]\n",
+            "       \n",
+            "modelo GaussianNB()\n",
+            "[[190  64  46]\n",
+            " [ 61  77 105]\n",
+            " [ 17  57 144]]\n",
+            "Accuracy    = 0.54\n",
+            "Sensitvity  = [0.633 0.317 0.661]\n",
+            "Precision   = [0.709 0.389 0.488]\n",
+            "       \n",
+            "modelo KNeighborsClassifier(n_neighbors=51)\n",
+            "[[250  41   9]\n",
+            " [139  66  38]\n",
+            " [ 68  65  85]]\n",
+            "Accuracy    = 0.527\n",
+            "Sensitvity  = [0.833 0.272 0.39 ]\n",
+            "Precision   = [0.547 0.384 0.644]\n",
+            "       \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Teste com texto fora da base de dados\n",
+        "artigo = \"The 5d pyrochlore oxide superconductor Cd2Re2O7 (CRO) has attracted significant interest as a spin–orbit-coupled metal (SOCM) that spontaneously undergoes a phase transition to an odd-parity multipole phase by breaking the spatial inversion symmetry due to the Fermi liquid instability caused by strong spin–orbit coupling. Despite the significance of structural information during the transition, previous experimental results regarding lattice deformation have been elusive. \"\n",
+        "wiki = \"Confusion matrix is not limited to binary classification and can be used in multi-class classifiers as well.\"\n",
+        "wiki2 = \"According to Davide Chicco and Giuseppe Jurman, the most informative metric to evaluate a confusion matrix is the Matthews correlation coefficient (MCC).[20] Other metrics can be included in a confusion matrix, each of them having their significance and use.\"\n",
+        "kids = \"It's big, its angry and its home to some of the most extreme conditions in our solar system. Welcome to Jupiter, where storms rage and intense gravity rules.\"\n",
+        "easy1 = \"one day in the park i found a baloon, the baloon was red\"\n",
+        "easy2 = \"computers are cool, John likes computers because they are cool\"\n",
+        "new_docs = (artigo, wiki, wiki2, easy1, easy2, kids)\n",
+        "new_line_X  = my_vectorizer.transform(new_docs)\n",
+        "\n",
+        "print(\"modelo\", M)\n",
+        "print(M.predict(new_line_X))\n",
+        "print(\"modelo\", GNB)\n",
+        "print(GNB.predict(new_line_X.toarray()))\n",
+        "print(\"modelo\", KNN)\n",
+        "print(KNN.predict(new_line_X.toarray()))\n",
+        "print()"
+      ],
+      "metadata": {
+        "id": "ZwvAbNwPt3HK",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "c62b0e75-7eb5-4adc-a1b8-85e69c14ed80"
+      },
+      "execution_count": 86,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "modelo LogisticRegression(max_iter=53, solver='liblinear')\n",
+            "[2 0 0 1 1 0]\n",
+            "modelo GaussianNB()\n",
+            "[2 1 2 2 1 0]\n",
+            "modelo KNeighborsClassifier(n_neighbors=51)\n",
+            "[2 1 0 0 1 0]\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "\n",
+        "\n",
+        "GRID SEARCH\n",
+        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "cLdgk1N1oLNl"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "from sklearn.model_selection import GridSearchCV\n",
+        "from sklearn.metrics import fbeta_score, make_scorer\n",
+        "import warnings\n",
+        "warnings.filterwarnings(action='ignore')                  # Turn off the warnings.\n",
+        "# exemplos de parametros para melhorar = {\n",
+        "# \"vect max_features\" \n",
+        "# \"vect min_df\" \n",
+        "# \"vect max_df\"\n",
+        "# \"knn neighbors\"\n",
+        "# \"Linear regression max iter\"}\n"
+      ],
+      "metadata": {
+        "id": "oMkLTegUQGKZ"
+      },
+      "execution_count": 94,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Grid search no KNN \n",
+        "grid = GridSearchCV(KNN, {\"n_neighbors\" : np.linspace(1,1001,20).astype(int)}, n_jobs = -1, scoring=\"accuracy\",verbose = 3)\n",
+        "grid.fit(x_train,y_train)\n",
+        "best_k = grid.best_params_['n_neighbors']\n",
+        "print(\"Best k : \" + str(best_k))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "2LGu3ULeSGVv",
+        "outputId": "933f2277-38b6-42fe-bce4-a307cf0400e2"
+      },
+      "execution_count": 96,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Fitting 5 folds for each of 20 candidates, totalling 100 fits\n",
+            "Best k : 53\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Grid search no Linear Regression \n",
+        "grid = GridSearchCV(M, {\"max_iter\" : np.linspace(1,5001,2).astype(int)}, cv=10, n_jobs = -1, scoring=\"accuracy\",verbose = 3)\n",
+        "grid.fit(x_train,y_train)\n",
+        "best_iter = grid.best_params_['max_iter']\n",
+        "print(\"Best iter : \" + str(best_iter))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "X62eX5VNlnId",
+        "outputId": "b69dd496-f8cd-40d0-ddec-689c338e4c4a"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Fitting 10 folds for each of 100 candidates, totalling 1000 fits\n",
+            "Best iter : 51\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#EXTRA AND NOT IMPORTANT\n",
+        "import matplotlib.pyplot as plt\n",
+        "y_pred_test_prob=M.predict_proba(x_test)[:,2] \n",
+        "FPR, TPR, cutoffs = metrics.roc_curve(y_test,y_pred_test_prob,pos_label=0)      # positive label = 2 difícil.     \n",
+        "# Visualize.\n",
+        "plt.plot(FPR,TPR,c='red',linewidth=1.0)\n",
+        "plt.xlabel('False Positive')\n",
+        "plt.ylabel('True Positive')\n",
+        "plt.title('ROC Curve')\n",
+        "plt.show()                                  "
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 295
+        },
+        "id": "JFHLnRHHSGYh",
+        "outputId": "1d8f53f2-b0f1-41e5-f16a-84a3f2c264e5"
+      },
+      "execution_count": 103,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    }
+  ]
+}
